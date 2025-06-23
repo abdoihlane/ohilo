@@ -1,6 +1,7 @@
 #ifndef PHILO_H
 #define PHILO_H
 
+#include <limits.h>
 #include <pthread.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -9,11 +10,11 @@
 
 typedef struct s_token
 {
-    int number_of_philosophers;
-    int time_to_die;
-    int time_to_eat;
-    int time_to_sleep;
-    int times_philo_must_eat;
+    long number_of_philosophers;
+    long time_to_die;
+    long time_to_eat;
+    long time_to_sleep;
+    long times_philo_must_eat;
 }   token_t;
 
 typedef struct s_philo
@@ -41,7 +42,8 @@ typedef struct s_rules
     philo_t *philos;
 }   rules_t;
 
-long long timestamp(void);
+long    ft_atoi(const char *str);
+unsigned int timestamp(void);
 void smart_sleep(int time_ms);
 void print_status(philo_t *philo, char *msg);
 int parse_input(rules_t *rules, int ac, char **av);

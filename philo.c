@@ -8,51 +8,6 @@ void print_status(philo_t *philo, char *msg)
     pthread_mutex_unlock(&philo->rules->print_mutex);
 }
 
-
-void *routine(void *arg)
-{
-    philo_t *p = (philo_t *)arg;
-    if (p->id % 2 == 0)
-        usleep(1000); 
-
-    while (1)
-    {
-        pthread_mutex_lock(&p->rules->stop_mutex);
-        int stopped = p->rules->stop;
-        pthread_mutex_unlock(&p->rules->stop_mutex);
-        if (stopped)
-            break;
-        // take forks
-        pthread_mutex_lock(p->left_fork);
-        print_status(p, "has taken a fork");
-        pthread_mutex_lock(p->right_fork);
-        print_status(p, "has taken a fork");
-
-        // eating
-        pthread_mutex_lock(&p->meal_mutex);
-        p->last_meal = timestamp();
-        pthread_mutex_unlock(&p->meal_mutex);
-        print_status(p, "is eating");
-        smart_sleep(p->rules->token.time_to_eat);
-        p->meals_eaten++;
-
-        // take off forks
-        pthread_mutex_unlock(p->right_fork);
-        pthread_mutex_unlock(p->left_fork);
-
-        // n3es
-        print_status(p, "is sleeping");
-        smart_sleep(p->rules->token.time_to_sleep);
-
-        // fker
-        print_status(p, "is thinking");
-    }
-    return NULL;
-}
-
-
-
-
 void *monitor(void *arg)
 {
     rules_t *rules = (rules_t *)arg;
@@ -83,6 +38,59 @@ void *monitor(void *arg)
 
 
 
+void *routine(void *arg)
+{
+    philo_t *p = (philo_t *)arg;
+    int has_left = 0;
+    int has_right = 0;
+
+    if (p->id % 2 == 0)
+        usleep(1000);
+
+    while (1)
+    {
+        pthread_mutex_lock(&p->rules->stop_mutex);
+        int stopped = p->rules->stop;
+        pthread_mutex_unlock(&p->rules->stop_mutex);
+        if (stopped)
+            break;
+
+        pthread_mutex_lock(p->left_fork);
+        has_left = 1;
+        print_status(p, "has taken a fork");
+
+        pthread_mutex_lock(p->right_fork);
+        has_right = 1;
+        print_status(p, "has taken a fork");
+
+        pthread_mutex_lock(&p->meal_mutex);
+        p->last_meal = timestamp();
+        pthread_mutex_unlock(&p->meal_mutex);
+        print_status(p, "is eating");
+
+        smart_sleep(p->rules->token.time_to_eat);
+        p->meals_eaten++;
+
+        pthread_mutex_unlock(p->right_fork);
+        has_right = 0;
+        pthread_mutex_unlock(p->left_fork);
+        has_left = 0;
+
+        print_status(p, "is sleeping");
+        smart_sleep(p->rules->token.time_to_sleep);
+
+        print_status(p, "is thinking");
+    }
+
+    if (has_right)
+        pthread_mutex_unlock(p->right_fork);
+    if (has_left)
+        pthread_mutex_unlock(p->left_fork);
+
+    return NULL;
+}
+
+
 // A deadlock in C occurs when two or more threads or processes
 // are blocked indefinitely
 //, each waiting for a resource that the other holds.
@@ -99,10 +107,11 @@ int main(int ac, char **av)
 
     int i = 0;
     rules_t rules;
-    pthread_t monitor_thread;
+    pthread_t monitor_thread = 0;
 
     parse_input(&rules, ac, av);  // fill  
-
+    if (parse_input(&rules, ac, av) == 1)
+        return 1;
     int n = rules.token.number_of_philosophers;
 
     rules.forks = malloc(sizeof(pthread_mutex_t) * n);
@@ -120,8 +129,9 @@ int main(int ac, char **av)
     }
 
     philo_init(&rules);
-
-    pthread_create(&monitor_thread, NULL, monitor, &rules);
+    monitor(&rules);
+    
+    // pthread_create(&monitor_thread, NULL, monitor, &rules);
 
     i = 0;
     while(i < n)

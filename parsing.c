@@ -1,5 +1,33 @@
 #include "philo.h"
 
+long    ft_atoi(const char *str)
+{
+    int        i;
+    long    num;
+
+    i = 0;
+    num = 0;
+    while ((str[i] >= 9 && str[i] <= 13) || str[i] == 32)
+        i++;
+    if (str[i] == '+')
+        i++;
+    if (str[i] == '-')
+        return (printf("Error: Please use positive value\n"), INT_MAX);
+    while (str[i] >= 48 && str[i] <= 57)
+    {
+        num = num * 10 + str[i++] - 48;
+        if (num > INT_MAX)
+            return (printf("Error: value is too big"), INT_MAX);
+        if (num < 0)
+            return (printf("Error: value is too big\n"), INT_MAX);
+    }
+    while ((str[i] >= 9 && str[i] <= 13) || str[i] == 32)
+        i++;
+    if (str[i])
+        return (printf("Error: not valid integer\n"), INT_MAX);
+    return (num);
+}
+
 int parsing_check(char **av)
 {
     int i = 1;
@@ -19,11 +47,12 @@ int parsing_check(char **av)
 
 int parse_input(rules_t *rules, int ac, char **av)
 {
-    rules->token.number_of_philosophers = atoi(av[1]);
-    rules->token.time_to_die = atoi(av[2]);
-    rules->token.time_to_eat = atoi(av[3]);
-    rules->token.time_to_sleep = atoi(av[4]);
-    rules->token.times_philo_must_eat = (ac == 6) ? atoi(av[5]) : -1;
+    rules->token.number_of_philosophers = ft_atoi(av[1]);
+    rules->token.time_to_die = ft_atoi(av[2]);
+    rules->token.time_to_eat = ft_atoi(av[3]);
+    rules->token.time_to_sleep = ft_atoi(av[4]);\
+    if(rules->token.time_to_die == INT_MAX ||rules->token.number_of_philosophers == INT_MAX ||rules->token.time_to_eat == INT_MAX || rules->token.time_to_sleep == INT_MAX )
+        return 1;
     return 0;
 }
 

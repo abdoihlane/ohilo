@@ -1,6 +1,6 @@
 #include "philo.h"
 
-long long timestamp(void)
+unsigned int timestamp(void)
 {
     struct timeval tv;
     gettimeofday(&tv, NULL);
