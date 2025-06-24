@@ -26,7 +26,6 @@ void *monitor(void *arg)
             {
                 rules->stop = 1;
                 printf("%lld %d died\n", (timestamp() - rules->start_time), p->id + 1);
-                // exit(1);
                 return NULL;
             }
             i++;
@@ -36,6 +35,23 @@ void *monitor(void *arg)
     return NULL;
 }
 
+int philo_init(rules_t *rules)
+{
+    int i = 0;
+    while( i < rules->token.number_of_philosophers)
+    {
+        rules->philos[i].id = i;
+        rules->philos[i].meals_eaten = 0;
+        rules->philos[i].last_meal = timestamp();
+        rules->philos[i].left_fork = &rules->forks[i];
+        rules->philos[i].right_fork = &rules->forks[(i + 1) % rules->token.number_of_philosophers];
+        rules->philos[i].rules = rules;
+        pthread_mutex_init(&rules->philos[i].meal_mutex, NULL);
+        pthread_create(&rules->philos[i].thread, NULL, routine, &rules->philos[i]);
+        i++;
+    }
+    return 0;
+}
 
 
 void *routine(void *arg)
@@ -154,7 +170,6 @@ int main(int ac, char **av)
         pthread_mutex_destroy(rules.philos[i].left_fork);
         pthread_mutex_destroy(rules.philos[i].right_fork);
     }
-    
 
     pthread_mutex_destroy(&rules.print_mutex);
     pthread_join(monitor_thread, NULL);
