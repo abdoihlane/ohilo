@@ -50,9 +50,14 @@ int parse_input(rules_t *rules, int ac, char **av)
     rules->token.number_of_philosophers = ft_atoi(av[1]);
     rules->token.time_to_die = ft_atoi(av[2]);
     rules->token.time_to_eat = ft_atoi(av[3]);
-    rules->token.time_to_sleep = ft_atoi(av[4]);\
+    rules->token.time_to_sleep = ft_atoi(av[4]);
+    if(ac == 6)
+        rules->token.times_philo_must_eat = ft_atoi(av[5]);
+    else
+        rules->token.times_philo_must_eat = -1;
     if(rules->token.time_to_die == INT_MAX ||rules->token.number_of_philosophers == INT_MAX ||rules->token.time_to_eat == INT_MAX || rules->token.time_to_sleep == INT_MAX )
         return 1;
+
     return 0;
 }
 

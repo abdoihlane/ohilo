@@ -2,7 +2,7 @@ NAME = philo
 LIBC = ar rc
 RM = rm -rf
 CC = cc
-#CFLAGS =  --tool=drd 
+CFLAGS =  -Wall -Wextra -Werror -pthread
 
 SRC = philo.c time.c parsing.c 
 

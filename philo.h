@@ -37,14 +37,14 @@ typedef struct s_rules
     pthread_mutex_t death_mutex;
     int stop;
     pthread_mutex_t stop_mutex;
-    // int stop;
+    int stop_eating;
     long long start_time;
     philo_t *philos;
 }   rules_t;
 
 long    ft_atoi(const char *str);
 unsigned int timestamp(void);
-void smart_sleep(int time_ms);
+void smart_sleep(philo_t *p,int time_ms);
 void print_status(philo_t *philo, char *msg);
 int parse_input(rules_t *rules, int ac, char **av);
 int parsing_check(char **av);
