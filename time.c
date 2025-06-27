@@ -6,7 +6,7 @@
 /*   By: ahabibi- <ahabibi-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 16:09:40 by ahabibi-          #+#    #+#             */
-/*   Updated: 2025/06/27 19:10:07 by ahabibi-         ###   ########.fr       */
+/*   Updated: 2025/06/27 20:22:40 by ahabibi-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,32 +27,6 @@ void	smart_sleep(t_philo *p, int time_ms)
 	start = timestamp();
 	while ((timestamp() - start) < time_ms && p->rules->stop != 1)
 		usleep(500);
-}
-
-void	destroy_mutexes(t_rules *rules)
-{
-	int			i;
-	pthread_t	monitor_thread;
-
-	monitor_thread = 0;
-	i = 0;
-	while (i < rules->token.number_of_philosophers)
-	{
-		pthread_mutex_destroy(&rules->forks[i]);
-		i++;
-	}
-	i = 0;
-	while (i < rules->token.number_of_philosophers)
-	{
-		pthread_mutex_destroy(&rules->philos[i].meal_mutex);
-		pthread_mutex_destroy(rules->philos[i].left_fork);
-		pthread_mutex_destroy(rules->philos[i].right_fork);
-		i++;
-	}
-	pthread_mutex_destroy(&rules->print_mutex);
-	pthread_mutex_destroy(&rules->stop_mutex);
-	pthread_mutex_destroy(&rules->death_mutex);
-	pthread_join(monitor_thread, NULL);
 }
 
 void	eat(t_philo *p)

@@ -6,10 +6,9 @@
 /*   By: ahabibi- <ahabibi-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 17:09:34 by ahabibi-          #+#    #+#             */
-/*   Updated: 2025/06/27 19:10:00 by ahabibi-         ###   ########.fr       */
+/*   Updated: 2025/06/27 20:26:31 by ahabibi-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 
 #ifndef PHILO_H
 # define PHILO_H
@@ -57,6 +56,7 @@ typedef struct t_rules
 	t_philo			*philos;
 }					t_rules;
 
+int				one_philo(t_rules *rules);
 long				ft_atoi(const char *str);
 unsigned int		timestamp(void);
 void				smart_sleep(t_philo *p, int time_ms);

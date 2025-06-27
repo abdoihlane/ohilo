@@ -24,7 +24,7 @@ CC      = cc
 CFLAGS  = -Wall -Wextra -Werror -pthread
 RM      = rm -rf
 
-SRC     = philo.c time.c parsing.c
+SRC     = philo.c time.c parsing.c helpers.c
 OBJS    = $(SRC:.c=.o)
 
 all: $(NAME)

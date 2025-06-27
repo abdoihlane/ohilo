@@ -6,10 +6,9 @@
 /*   By: ahabibi- <ahabibi-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 17:09:30 by ahabibi-          #+#    #+#             */
-/*   Updated: 2025/06/27 19:09:51 by ahabibi-         ###   ########.fr       */
+/*   Updated: 2025/06/27 20:26:52 by ahabibi-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 
 #include "philo.h"
 
@@ -75,9 +74,8 @@ void	*monitor(void *arg)
 void	*routine(void *arg)
 {
 	t_philo	*p;
-	int		stopped;
-	int		stop_eating;
 
+	int (stopped), (stop_eating);
 	p = (t_philo *)arg;
 	if (p->id % 2 == 0)
 		usleep(1000);
@@ -87,7 +85,8 @@ void	*routine(void *arg)
 		stopped = p->rules->stop;
 		stop_eating = p->rules->stop_eating;
 		pthread_mutex_unlock(&p->rules->stop_mutex);
-		if (stopped || (stop_eating == 1
+		if (stopped || p->rules->token.number_of_philosophers == 1
+			|| (stop_eating == 1
 				&& p->meals_eaten >= p->rules->token.times_philo_must_eat))
 			break ;
 		eat(p);
@@ -119,7 +118,9 @@ int	main(int ac, char **av)
 	philo_init(&rules, n);
 	rules.stop = 0;
 	rules.start_time = timestamp();
-	monitor(&rules);
+	if (n == 1 && one_philo(&rules) == 0)
+		return (0);
+	monitor(&rules);	
 	pthread_joan(n, &rules);
 	destroy_mutexes(&rules);
 	free(rules.forks);
