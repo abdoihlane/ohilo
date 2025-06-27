@@ -6,7 +6,7 @@
 /*   By: ahabibi- <ahabibi-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 17:09:30 by ahabibi-          #+#    #+#             */
-/*   Updated: 2025/06/27 20:26:52 by ahabibi-         ###   ########.fr       */
+/*   Updated: 2025/06/27 20:37:13 by ahabibi-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,7 +120,7 @@ int	main(int ac, char **av)
 	rules.start_time = timestamp();
 	if (n == 1 && one_philo(&rules) == 0)
 		return (0);
-	monitor(&rules);	
+	monitor(&rules);
 	pthread_joan(n, &rules);
 	destroy_mutexes(&rules);
 	free(rules.forks);

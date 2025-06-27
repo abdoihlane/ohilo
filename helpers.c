@@ -48,5 +48,5 @@ int	one_philo(t_rules *rules)
 	destroy_mutexes(rules);
 	free(rules->forks);
 	free(rules->philos);
-    return 0;
+	return (0);
 }

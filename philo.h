@@ -56,7 +56,7 @@ typedef struct t_rules
 	t_philo			*philos;
 }					t_rules;
 
-int				one_philo(t_rules *rules);
+int					one_philo(t_rules *rules);
 long				ft_atoi(const char *str);
 unsigned int		timestamp(void);
 void				smart_sleep(t_philo *p, int time_ms);
