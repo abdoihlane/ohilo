@@ -6,7 +6,7 @@
 /*   By: ahabibi- <ahabibi-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 17:09:22 by ahabibi-          #+#    #+#             */
-/*   Updated: 2025/06/27 19:09:55 by ahabibi-         ###   ########.fr       */
+/*   Updated: 2025/07/14 22:43:49 by ahabibi-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,6 @@ long	ft_atoi(const char *str)
 	{
 		num = num * 10 + str[i++] - 48;
 		if (num > INT_MAX)
-			return (printf("Error: value is too big"), INT_MAX);
-		if (num < 0)
 			return (printf("Error: value is too big\n"), INT_MAX);
 	}
 	while ((str[i] >= 9 && str[i] <= 13) || str[i] == 32)
@@ -70,10 +68,15 @@ int	parse_input(t_rules *rules, int ac, char **av)
 		rules->token.times_philo_must_eat = ft_atoi(av[5]);
 	else
 		rules->token.times_philo_must_eat = -1;
+	if (rules->token.times_philo_must_eat == 0)
+		return (1);
 	if (rules->token.time_to_die == INT_MAX
 		|| rules->token.number_of_philosophers == INT_MAX
 		|| rules->token.time_to_eat == INT_MAX
-		|| rules->token.time_to_sleep == INT_MAX)
+		|| rules->token.time_to_sleep == INT_MAX
+		|| rules->token.number_of_philosophers == 0
+		|| rules->token.time_to_eat <= 0
+		|| rules->token.time_to_sleep <= 0)
 		return (1);
 	return (0);
 }
@@ -82,39 +85,39 @@ int	philo_init(t_rules *rules, int n)
 {
 	int	i;
 
-	i = 0;
 	rules->forks = malloc(sizeof(pthread_mutex_t) * n);
 	rules->philos = malloc(sizeof(t_philo) * n);
+	i = 0;
+	while (i < n)
+		pthread_mutex_init(&rules->forks[i++], NULL);
+	init_mutexes(rules);
+	i = 0;
 	while (i < rules->token.number_of_philosophers)
 	{
+		rules->philos[i].left_fork = &rules->forks[i];
+		rules->philos[i].right_fork = &rules->forks[(i + 1) % n];
 		rules->philos[i].id = i;
 		rules->philos[i].meals_eaten = 0;
-		rules->philos[i].last_meal = timestamp();
-		rules->philos[i].left_fork = &rules->forks[i];
-		rules->philos[i].right_fork = &rules->forks[(i + 1)
-			% rules->token.number_of_philosophers];
-		rules->philos[i].rules = rules;
-		rules->philos[i].has_left = 0;
-		rules->philos[i].has_right = 0;
+		rules->philos[i].finished = 0;
 		pthread_mutex_init(&rules->philos[i].meal_mutex, NULL);
-		pthread_create(&rules->philos[i].thread, NULL, routine,
-			&rules->philos[i]);
-		pthread_mutex_init(&rules->forks[i], NULL);
+		rules->philos[i].rules = rules;
 		i++;
 	}
-	pthread_mutex_init(&rules->stop_mutex, NULL);
-	pthread_mutex_init(&rules->print_mutex, NULL);
+	rules->start_time = timestamp();
+	creat_threads(rules);
 	return (0);
 }
 
-void	pthread_joan(int n, t_rules *rules)
+void	creat_threads(t_rules *rules)
 {
 	int	i;
 
 	i = 0;
-	while (i < n)
+	while (i < rules->token.number_of_philosophers)
 	{
-		pthread_join(rules->philos[i].thread, NULL);
+		rules->philos[i].last_meal = rules->start_time;
+		pthread_create(&rules->philos[i].thread, NULL, routine,
+			&rules->philos[i]);
 		i++;
 	}
 }
